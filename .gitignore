@@ -1,0 +1,9 @@
+# Visual Studio
+.vs/
+*.user
+
+# Output directories
+bin/
+
+# Temporary directories
+tmp/

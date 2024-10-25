@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="code\main.cpp" />
+    <ClCompile Include="code\boid.cpp" />
+    <ClCompile Include="code\mathutils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="extern\raylib-5.0_win64_msvc16\include\rlgl.h">
+      <Filter>extern\raylib</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\raylib-5.0_win64_msvc16\include\raylib.h">
+      <Filter>extern\raylib</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\raylib-5.0_win64_msvc16\include\raymath.h">
+      <Filter>extern\raylib</Filter>
+    </ClInclude>
+    <ClInclude Include="code\boid.h" />
+    <ClInclude Include="code\mathutils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="extern">
+      <UniqueIdentifier>{e857d5ca-7220-4546-ac90-2d610aada647}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\raylib">
+      <UniqueIdentifier>{f77299cf-a770-4f05-92fa-8d01d43202b8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
