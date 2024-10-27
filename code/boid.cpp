@@ -35,12 +35,11 @@ Vector3 Boid::Align(const std::vector<std::unique_ptr<Boid>>& boids) const
     for (const auto& boid : boids)
     {
         const float distance = Vector3Distance(m_Position, boid->m_Position);
-
         const bool isOtherPosSameAsMe = (m_Position == boid->m_Position);
 
         if (!isOtherPosSameAsMe && distance < viewRadius)
         {
-            steeringForce += boid->m_Velocity;
+            steeringForce += boid->m_Velocity; // Sum up velocities of all nearby boids
             numNearbyBoids++;
         }
     }
@@ -63,19 +62,19 @@ Vector3 Boid::Cohere(const std::vector<std::unique_ptr<Boid>>& boids) const
 
     for (const auto& boid : boids)
     {
-        float distance = Vector3Distance(m_Position, boid->m_Position);
+        const float distance = Vector3Distance(m_Position, boid->m_Position);
         const bool isOtherPosSameAsMe = (m_Position == boid->m_Position);
 
         if (!isOtherPosSameAsMe && distance < viewRadius)
         {
-            steeringForce += boid->m_Position;
+            steeringForce += boid->m_Position; // Sum up the position of all nearby boids
             numNearbyBoids++;
         }
     }
 
     if (numNearbyBoids > 0)
     {
-        steeringForce /= (float)numNearbyBoids;
+        steeringForce /= (float)numNearbyBoids; // The average position
         steeringForce -= m_Position;
         steeringForce = Vector3ClampValue(steeringForce, 0, maxForce);
     }
@@ -92,21 +91,21 @@ Vector3 Boid::Separate(const std::vector<std::unique_ptr<Boid>>& boids) const
 
     for (const auto& boid : boids)
     {
-        float distance = Vector3Distance(m_Position, boid->m_Position);
+        const float distance = Vector3Distance(m_Position, boid->m_Position);
         const bool isOtherPosSameAsMe = (m_Position == boid->m_Position);
 
         if (!isOtherPosSameAsMe && distance < separationDistance)
         {
             numNearbyBoids++;
-            Vector3 diff = m_Position - boid->m_Position;
-            diff /= distance;
+            // Divide by distance so closer boids have a higher impact on separation force
+            Vector3 diff = (m_Position - boid->m_Position) / distance;
             steeringForce += diff;
         }
     }
 
     if (numNearbyBoids > 0)
     {
-        steeringForce /= (float)numNearbyBoids;
+        steeringForce /= (float)numNearbyBoids; // Get average separation force
         steeringForce = Vector3ClampValue(steeringForce, 0, maxForce);
     }
 
@@ -123,7 +122,7 @@ void DrawBoids(const std::vector<std::unique_ptr<Boid>>& boids)
     }
 }
 
-void UpdateBoids(std::vector<std::unique_ptr<Boid>>& boids)
+void UpdateBoids(std::vector<std::unique_ptr<Boid>>& boids, const float worldSize)
 {
     constexpr float maxSpeed = 3.0f;
 
@@ -137,6 +136,6 @@ void UpdateBoids(std::vector<std::unique_ptr<Boid>>& boids)
         boid->m_Velocity = Vector3ClampValue(boid->m_Velocity, 0, maxSpeed);
         boid->m_Position += boid->m_Velocity;
 
-        WrapBoidIfGreaterThan(*boid, 100.0f);
+        WrapBoidIfGreaterThan(*boid, worldSize);
     }
 }

@@ -17,4 +17,4 @@ public:
 };
 
 void DrawBoids(const std::vector<std::unique_ptr<Boid>>& boids);
-void UpdateBoids(std::vector<std::unique_ptr<Boid>>& boids);
+void UpdateBoids(std::vector<std::unique_ptr<Boid>>& boids, const float worldSize);

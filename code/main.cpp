@@ -34,15 +34,17 @@ int main()
     DisableCursor();
 
     constexpr int numBoids = 200;
+    constexpr float worldSize = 200.0f;
+    constexpr float worldSizeHalf = worldSize / 2;
 
     std::vector<std::unique_ptr<Boid>> boids;
     boids.reserve(numBoids);
 
     for (int i = 0; i < numBoids; i++)
     {
-        const float rx = RandomFloat(-100, 100);
-        const float ry = RandomFloat(-100, 100);
-        const float rz = RandomFloat(-100, 100);
+        const float rx = RandomFloat(-worldSizeHalf, worldSizeHalf);
+        const float ry = RandomFloat(-worldSizeHalf, worldSizeHalf);
+        const float rz = RandomFloat(-worldSizeHalf, worldSizeHalf);
 
         auto boid = std::make_unique<Boid>();
 
@@ -57,19 +59,19 @@ int main()
         boids.push_back(std::move(boid));
     }
 
-    const float moveSpeed = 2.0f;
-    const float mouseSensitivity = 0.05f;
+    constexpr float moveSpeed = 2.0f;
+    constexpr float mouseSensitivity = 0.05f;
 
     while (!WindowShouldClose())
     {
         /**** BEGIN UPDATE ****/
-        Vector3 cameraMovement =
+        const Vector3 cameraMovement =
         {
             .x = (IsKeyDown(KEY_W) - IsKeyDown(KEY_S)) * moveSpeed,
             .y = (IsKeyDown(KEY_D) - IsKeyDown(KEY_A)) * moveSpeed,
             .z = (IsKeyDown(KEY_E) - IsKeyDown(KEY_Q)) * moveSpeed
         };
-        Vector3 cameraRotation =
+        const Vector3 cameraRotation =
         {
             .x = GetMouseDelta().x * mouseSensitivity,
             .y = GetMouseDelta().y * mouseSensitivity,
@@ -78,7 +80,7 @@ int main()
 
         UpdateCameraPro(&camera, cameraMovement, cameraRotation, 0.0f);
 
-        UpdateBoids(boids);
+        UpdateBoids(boids, worldSizeHalf);
         /**** END UPDATE ****/
 
         /**** BEGIN DRAW ****/
@@ -92,8 +94,12 @@ int main()
 
                 DrawBoids(boids);
 
-                DrawCube(Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f }, 200, 200, 200, Fade(GRAY, 0.4));
-                DrawCubeWires(Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f }, 200, 200, 200, BLACK);
+                DrawCube(
+                    Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f },
+                    worldSize, worldSize, worldSize, Fade(GRAY, 0.4f));
+                DrawCubeWires(
+                    Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f },
+                    worldSize, worldSize, worldSize, BLACK);
 
             EndMode3D();
 
