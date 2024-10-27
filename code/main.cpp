@@ -52,15 +52,31 @@ int main()
             .y = ry,
             .z = rz
         };
-        boid->m_Velocity = CreateRandomVector3() * 0.2f;
+        boid->m_Velocity = CreateRandomVector3() * 0.f;
 
         boids.push_back(std::move(boid));
     }
 
+    const float moveSpeed = 2.0f;
+    const float mouseSensitivity = 0.05f;
+
     while (!WindowShouldClose())
     {
         /**** BEGIN UPDATE ****/
-        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
+        Vector3 cameraMovement =
+        {
+            .x = (IsKeyDown(KEY_W) - IsKeyDown(KEY_S)) * moveSpeed,
+            .y = (IsKeyDown(KEY_D) - IsKeyDown(KEY_A)) * moveSpeed,
+            .z = (IsKeyDown(KEY_E) - IsKeyDown(KEY_Q)) * moveSpeed
+        };
+        Vector3 cameraRotation =
+        {
+            .x = GetMouseDelta().x * mouseSensitivity,
+            .y = GetMouseDelta().y * mouseSensitivity,
+            .z = 0.0f
+        };
+
+        UpdateCameraPro(&camera, cameraMovement, cameraRotation, 0.0f);
 
         UpdateBoids(boids);
         /**** END UPDATE ****/

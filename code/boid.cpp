@@ -106,7 +106,7 @@ Vector3 Boid::Separate(const std::vector<std::unique_ptr<Boid>>& boids) const
 
     if (numNearbyBoids > 0)
     {
-        steeringForce /= numNearbyBoids;
+        steeringForce /= (float)numNearbyBoids;
         steeringForce = Vector3ClampValue(steeringForce, 0, maxForce);
     }
 
