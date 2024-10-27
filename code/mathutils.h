@@ -2,7 +2,6 @@
 #include <cmath>
 
 #include "raylib.h"
-#include "raymath.h"
 
 float RandomFloat();
 float RandomFloat(const float min, const float max);
@@ -16,5 +15,7 @@ Vector3 operator-(const Vector3 v1, const Vector3 v2);
 Vector3& operator-=(Vector3& v1, const Vector3 v2);
 Vector3 operator/(const Vector3 v1, const Vector3 v2);
 Vector3& operator/=(Vector3& v1, const Vector3 v2);
+Vector3 operator/(const Vector3 v, const float value);
+Vector3& operator/=(Vector3& v, const float value);
 bool operator==(const Vector3 v1, const Vector3 v2);
 bool operator>(const Vector3 v, const int n);

@@ -24,7 +24,7 @@ int main()
 
     Camera camera =
     {
-        .position = { .x = 10.0f, .y = 10.0f, .z = 10.0f },
+        .position = { .x = 0.0f, .y = 100.0f, .z = 300.0f },
         .target = { .x = 0.0f, .y = 0.0f, .z = 0.0f },
         .up = { .x = 0.0f, .y = 1.0f, .z = 0.0f },
         .fovy = 45.0f,
@@ -40,9 +40,9 @@ int main()
 
     for (int i = 0; i < numBoids; i++)
     {
-        const float rx = RandomFloat(-10.0f, 10.0f);
-        const float ry = RandomFloat(0.0f, 10.0f);
-        const float rz = RandomFloat(-10.0f, 10.0f);
+        const float rx = RandomFloat(-100, 100);
+        const float ry = RandomFloat(-100, 100);
+        const float rz = RandomFloat(-100, 100);
 
         auto boid = std::make_unique<Boid>();
 
@@ -52,7 +52,7 @@ int main()
             .y = ry,
             .z = rz
         };
-        boid->m_Velocity = CreateRandomVector3() * 0.05f;
+        boid->m_Velocity = CreateRandomVector3() * 0.2f;
 
         boids.push_back(std::move(boid));
     }
@@ -60,7 +60,7 @@ int main()
     while (!WindowShouldClose())
     {
         /**** BEGIN UPDATE ****/
-        UpdateCamera(&camera, CAMERA_THIRD_PERSON);
+        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
 
         UpdateBoids(boids);
         /**** END UPDATE ****/
@@ -72,13 +72,17 @@ int main()
 
             BeginMode3D(camera);
 
-                DrawGrid(100, 1.0f);
+                DrawGrid(100, 10.0f);
 
                 DrawBoids(boids);
+
+                DrawCube(Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f }, 200, 200, 200, Fade(GRAY, 0.4));
+                DrawCubeWires(Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f }, 200, 200, 200, BLACK);
 
             EndMode3D();
 
             DrawFPS(5, 5);
+
 
         EndDrawing();
         /**** END DRAW ****/

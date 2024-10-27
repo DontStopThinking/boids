@@ -1,5 +1,7 @@
 #include "mathutils.h"
 
+#include "raymath.h"
+
 float RandomFloat()
 {
     return static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
@@ -70,6 +72,17 @@ Vector3& operator/=(Vector3& v1, const Vector3 v2)
 {
     v1 = v1 / v2;
     return v1;
+}
+
+Vector3 operator/(const Vector3 v, const float value)
+{
+    return Vector3Scale(v, 1.0f / value);
+}
+
+Vector3& operator/=(Vector3& v, const float value)
+{
+    v = v / value;
+    return v;
 }
 
 bool operator==(const Vector3 v1, const Vector3 v2)
