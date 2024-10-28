@@ -2,7 +2,7 @@
 
 A Boids artificial life simulation based on the [1986 paper by Craig Reynolds](https://www.red3d.com/cwr/boids/).
 
-![Example](repo/boids_1.mp4)
+https://github.com/user-attachments/assets/b9da95d9-b79b-494e-83fd-47101e6a0a91
 
 # How does it work?
 Each "boid", or bird-like object, starts with a random velocity and follows the following rules:
