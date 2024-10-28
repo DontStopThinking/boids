@@ -54,7 +54,7 @@ int main()
             .y = ry,
             .z = rz
         };
-        boid->m_Velocity = CreateRandomVector3() * 0.f;
+        boid->m_Velocity = CreateRandomVector3() * 0.3f;
 
         boids.push_back(std::move(boid));
     }

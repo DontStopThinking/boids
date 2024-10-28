@@ -1,5 +1,7 @@
 #include "boid.h"
 
+#include "rlgl.h"
+
 #include "mathutils.h"
 
 namespace
@@ -23,6 +25,49 @@ namespace
         {
             boid.m_Velocity = -boid.m_Velocity;
         }
+    }
+
+    void DrawBoid(const Boid& boid, const Color color, const float scale)
+    {
+        constexpr int numIndices = 18;
+        constexpr int indices[numIndices] = {
+            2,1,0,
+            1,3,0,
+            4,3,1,
+            2,4,1,
+            0,4,2,
+            0,3,4,
+        };
+
+        constexpr int numVerts = 5;
+        constexpr float verts[numVerts * 3] = {
+            0.0f,  0.0f,  0.0f, // 0
+            0.0f,  0.0f, -1.0f, // 1
+            0.8f,  0.3f,  0.4f, // 2
+            -0.8f,  0.3f,  0.4f, // 3
+            0.0f, -0.1f,  0.0f, // 4
+        };
+
+        rlPushMatrix();
+        rlTranslatef(boid.m_Position.x, boid.m_Position.y, boid.m_Position.z);
+
+        const float rotateAngle = (-RAD2DEG) * std::atan2(boid.m_Velocity.x, -boid.m_Velocity.z);
+        rlRotatef(rotateAngle, 0.0f, 1.0f, 0.0f);
+
+        rlScalef(scale, scale, scale);
+
+        rlColor4ub(color.r, color.g, color.b, color.a);
+
+        rlBegin(RL_TRIANGLES);
+        for (int i = 0; i < numIndices; i++)
+        {
+            rlVertex3f(
+                verts[indices[i] * 3],
+                verts[indices[i] * 3 + 1],
+                verts[indices[i] * 3 + 2]);
+        }
+        rlEnd();
+        rlPopMatrix();
     }
 }
 
@@ -118,7 +163,7 @@ void DrawBoids(const std::vector<std::unique_ptr<Boid>>& boids)
 
     for (const auto& boid : boids)
     {
-         DrawSphere(boid->m_Position, radius, BLUE);
+        DrawBoid(*boid, DARKBLUE, 3);
     }
 }
 
