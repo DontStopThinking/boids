@@ -1,7 +1,6 @@
 #include <cstdio>
 #include <vector>
 #include <cmath>
-#include <memory>
 #include <ctime>
 #include <cstdlib>
 

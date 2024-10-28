@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <memory>
 
 #include "raylib.h"
 #include "raymath.h"
