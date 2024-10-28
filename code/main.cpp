@@ -37,7 +37,7 @@ int main()
     constexpr float worldSize = 200.0f;
     constexpr float worldSizeHalf = worldSize / 2;
 
-    std::vector<std::unique_ptr<Boid>> boids;
+    std::vector<Boid> boids;
     boids.reserve(numBoids);
 
     for (int i = 0; i < numBoids; i++)
@@ -46,15 +46,15 @@ int main()
         const float ry = RandomFloat(-worldSizeHalf, worldSizeHalf);
         const float rz = RandomFloat(-worldSizeHalf, worldSizeHalf);
 
-        auto boid = std::make_unique<Boid>();
+        Boid boid = {};
 
-        boid->m_Position =
+        boid.m_Position =
         {
             .x = rx,
             .y = ry,
             .z = rz
         };
-        boid->m_Velocity = CreateRandomVector3() * 0.3f;
+        boid.m_Velocity = CreateRandomVector3() * 0.3f;
 
         boids.push_back(std::move(boid));
     }

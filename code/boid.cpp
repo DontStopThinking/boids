@@ -71,7 +71,7 @@ namespace
     }
 }
 
-Vector3 Boid::Align(const std::vector<std::unique_ptr<Boid>>& boids) const
+Vector3 Boid::Align(const std::vector<Boid>& boids) const
 {
     Vector3 steeringForce = {};
 
@@ -79,12 +79,12 @@ Vector3 Boid::Align(const std::vector<std::unique_ptr<Boid>>& boids) const
 
     for (const auto& boid : boids)
     {
-        const float distance = Vector3Distance(m_Position, boid->m_Position);
-        const bool isOtherPosSameAsMe = (m_Position == boid->m_Position);
+        const float distance = Vector3Distance(m_Position, boid.m_Position);
+        const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
 
         if (!isOtherPosSameAsMe && distance < viewRadius)
         {
-            steeringForce += boid->m_Velocity; // Sum up velocities of all nearby boids
+            steeringForce += boid.m_Velocity; // Sum up velocities of all nearby boids
             numNearbyBoids++;
         }
     }
@@ -99,20 +99,20 @@ Vector3 Boid::Align(const std::vector<std::unique_ptr<Boid>>& boids) const
     return steeringForce;
 }
 
-Vector3 Boid::Cohere(const std::vector<std::unique_ptr<Boid>>& boids) const
+Vector3 Boid::Cohere(const std::vector<Boid>& boids) const
 {
     Vector3 steeringForce = {};
 
     int numNearbyBoids = 0;
 
-    for (const auto& boid : boids)
+    for (const Boid& boid : boids)
     {
-        const float distance = Vector3Distance(m_Position, boid->m_Position);
-        const bool isOtherPosSameAsMe = (m_Position == boid->m_Position);
+        const float distance = Vector3Distance(m_Position, boid.m_Position);
+        const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
 
         if (!isOtherPosSameAsMe && distance < viewRadius)
         {
-            steeringForce += boid->m_Position; // Sum up the position of all nearby boids
+            steeringForce += boid.m_Position; // Sum up the position of all nearby boids
             numNearbyBoids++;
         }
     }
@@ -127,23 +127,23 @@ Vector3 Boid::Cohere(const std::vector<std::unique_ptr<Boid>>& boids) const
     return steeringForce;
 }
 
-Vector3 Boid::Separate(const std::vector<std::unique_ptr<Boid>>& boids) const
+Vector3 Boid::Separate(const std::vector<Boid>& boids) const
 {
     constexpr float separationDistance = 15.0f;
 
     Vector3 steeringForce = {};
     int numNearbyBoids = 0;
 
-    for (const auto& boid : boids)
+    for (const Boid& boid : boids)
     {
-        const float distance = Vector3Distance(m_Position, boid->m_Position);
-        const bool isOtherPosSameAsMe = (m_Position == boid->m_Position);
+        const float distance = Vector3Distance(m_Position, boid.m_Position);
+        const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
 
         if (!isOtherPosSameAsMe && distance < separationDistance)
         {
             numNearbyBoids++;
             // Divide by distance so closer boids have a higher impact on separation force
-            Vector3 diff = (m_Position - boid->m_Position) / distance;
+            Vector3 diff = (m_Position - boid.m_Position) / distance;
             steeringForce += diff;
         }
     }
@@ -157,30 +157,30 @@ Vector3 Boid::Separate(const std::vector<std::unique_ptr<Boid>>& boids) const
     return steeringForce;
 }
 
-void DrawBoids(const std::vector<std::unique_ptr<Boid>>& boids)
+void DrawBoids(const std::vector<Boid>& boids)
 {
     constexpr float radius = 1.5f;
 
     for (const auto& boid : boids)
     {
-        DrawBoid(*boid, DARKBLUE, 3);
+        DrawBoid(boid, DARKBLUE, 3);
     }
 }
 
-void UpdateBoids(std::vector<std::unique_ptr<Boid>>& boids, const float worldSize)
+void UpdateBoids(std::vector<Boid>& boids, const float worldSize)
 {
     constexpr float maxSpeed = 3.0f;
 
-    for (std::unique_ptr<Boid>& boid : boids)
+    for (Boid& boid : boids)
     {
         // Apply alignment, cohesion and separation.
-        Vector3 acceleration = boid->Align(boids) + boid->Cohere(boids) + boid->Separate(boids);
+        Vector3 acceleration = boid.Align(boids) + boid.Cohere(boids) + boid.Separate(boids);
 
         // Update position
-        boid->m_Velocity += acceleration;
-        boid->m_Velocity = Vector3ClampValue(boid->m_Velocity, 0, maxSpeed);
-        boid->m_Position += boid->m_Velocity;
+        boid.m_Velocity += acceleration;
+        boid.m_Velocity = Vector3ClampValue(boid.m_Velocity, 0, maxSpeed);
+        boid.m_Position += boid.m_Velocity;
 
-        WrapBoidIfGreaterThan(*boid, worldSize);
+        WrapBoidIfGreaterThan(boid, worldSize);
     }
 }
