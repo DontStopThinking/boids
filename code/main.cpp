@@ -90,16 +90,17 @@ int main()
 
             BeginMode3D(camera);
 
-                DrawGrid(100, 10.0f);
-
                 DrawBoids(boids);
 
                 DrawCube(
                     Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f },
                     worldSize, worldSize, worldSize, Fade(GRAY, 0.4f));
+
                 DrawCubeWires(
                     Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f },
                     worldSize, worldSize, worldSize, BLACK);
+
+                DrawGrid(100, 10.0f);
 
             EndMode3D();
 
