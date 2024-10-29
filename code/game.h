@@ -1,7 +1,5 @@
 #pragma once
 
-//#include "boid.h"
-
 class Boid;
 
 struct GameState

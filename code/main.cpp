@@ -58,9 +58,9 @@ int main()
 
     // We assign the boids array pointer to point to just after the gameState object. So after this our memory
     // layout will basically be:
-    // -----------------------------------------------
-    // | gameState object | gameState->m_Boids array |
-    // ---------------------------------------------- -
+    // --------------------------------------------------------------
+    // | gameState object | array that gameState->m_Boids points to |
+    // --------------------------------------------------------------
     gameState->m_Boids = (Boid*)((uint8_t*)gameMemory.m_PermanentStorage + sizeof(GameState));
 
     for (int i = 0; i < numBoids; i++)
