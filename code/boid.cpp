@@ -8,23 +8,45 @@ namespace
 {
     constexpr float viewRadius = 10.0f;
     constexpr float maxForce = 0.1f;
+    constexpr float boundaryThreshold = 5.0f;
 
-    void WrapBoidIfGreaterThan(Boid& boid, const float limit)
+    Vector3 TurnBoidIfCloseToBoundary(const Boid& boid, const float worldLimit)
     {
-        if (boid.m_Position.x > limit) boid.m_Position.x = -limit;
-        if (boid.m_Position.x < -limit) boid.m_Position.x = limit;
-        if (boid.m_Position.y > limit) boid.m_Position.y = -limit;
-        if (boid.m_Position.y < -limit) boid.m_Position.y = limit;
-        if (boid.m_Position.z > limit) boid.m_Position.z = -limit;
-        if (boid.m_Position.z < -limit) boid.m_Position.z = limit;
-    }
+        Vector3 steeringForce = {};
 
-    void ReverseBoidIfGreaterThan(Boid& boid, const int limit)
-    {
-        if (boid.m_Position > limit)
+        const float limit = worldLimit - boundaryThreshold;
+        const float bx = boid.m_Position.x;
+        const float by = boid.m_Position.y;
+        const float bz = boid.m_Position.z;
+
+        if (bx > limit)
         {
-            boid.m_Velocity = -boid.m_Velocity;
+            steeringForce.x = -maxForce * (1.0f - (worldLimit - bx) / boundaryThreshold);
         }
+        else if (bx < -limit)
+        {
+            steeringForce.x = maxForce * (1.0f - (worldLimit + bx) / boundaryThreshold);
+        }
+
+        if (by > limit)
+        {
+            steeringForce.y = -maxForce * (1.0f - (worldLimit - by) / boundaryThreshold);
+        }
+        else if (by < -limit)
+        {
+            steeringForce.y = maxForce * (1.0f - (worldLimit + by) / boundaryThreshold);
+        }
+
+        if (bz > limit)
+        {
+            steeringForce.z = -maxForce * (1.0f - (worldLimit - bz) / boundaryThreshold);
+        }
+        else if (bz < -limit)
+        {
+            steeringForce.z = maxForce * (1.0f - (worldLimit + bz) / boundaryThreshold);
+        }
+
+        return steeringForce;
     }
 
     void DrawBoid(const Boid& boid, const Color color, const float scale)
@@ -149,7 +171,7 @@ Vector3 Boid::Separate(const GameState* gameState) const
     const Boid* boids = gameState->m_Boids;
     const int numBoids = gameState->m_NumBoids;
 
-    constexpr float separationDistance = 15.0f;
+    constexpr float separationDistance = 20.0f;
 
     Vector3 steeringForce = {};
     int numNearbyBoids = 0;
@@ -207,11 +229,11 @@ void UpdateBoids(GameState* gameState)
         // Apply alignment, cohesion and separation.
         Vector3 acceleration = boid.Align(gameState) + boid.Cohere(gameState) + boid.Separate(gameState);
 
+        acceleration += TurnBoidIfCloseToBoundary(boid, worldSize);
+
         // Update position
         boid.m_Velocity += acceleration;
         boid.m_Velocity = Vector3ClampValue(boid.m_Velocity, 0, maxSpeed);
         boid.m_Position += boid.m_Velocity;
-
-        WrapBoidIfGreaterThan(boid, worldSize);
     }
 }
