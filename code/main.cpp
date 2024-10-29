@@ -34,7 +34,7 @@ int main()
 
     DisableCursor();
 
-    constexpr int numBoids = 200;
+    constexpr int numBoids = 300;
     constexpr float worldSize = 200.0f;
     constexpr float worldSizeHalf = worldSize / 2;
 
@@ -85,6 +85,8 @@ int main()
     constexpr float moveSpeed = 2.0f;
     constexpr float mouseSensitivity = 0.05f;
 
+    bool paused = false;
+
     while (!WindowShouldClose())
     {
         /**** BEGIN UPDATE ****/
@@ -101,9 +103,17 @@ int main()
             .z = 0.0f
         };
 
+        if (IsKeyPressed(KEY_P))
+        {
+            paused = !paused;
+        }
+
         UpdateCameraPro(&camera, cameraMovement, cameraRotation, 0.0f);
 
-        UpdateBoids(gameState);
+        if (!paused)
+        {
+            UpdateBoids(gameState);
+        }
         /**** END UPDATE ****/
 
         /**** BEGIN DRAW ****/
@@ -126,6 +136,11 @@ int main()
                 DrawGrid(100, 10.0f);
 
             EndMode3D();
+
+            if (paused)
+            {
+                DrawText("Paused", screenWidth - 100, 10, 25, ORANGE);
+            }
 
             DrawFPS(5, 5);
 
