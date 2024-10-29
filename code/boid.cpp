@@ -69,16 +69,28 @@ namespace
         rlEnd();
         rlPopMatrix();
     }
+
+    void PrintBoid(const Boid* boid)
+    {
+        std::printf("Position: { .x = %f, .y = %f, .z = %f}, Velocity:  .x = %f, .y = %f, .z = %f}\n",
+            boid->m_Position.x, boid->m_Position.y, boid->m_Position.z,
+            boid->m_Velocity.x, boid->m_Velocity.y, boid->m_Velocity.z);
+    }
 }
 
-Vector3 Boid::Align(const std::vector<Boid>& boids) const
+Vector3 Boid::Align(const GameState* gameState) const
 {
+    const Boid* boids = gameState->m_Boids;
+    const int numBoids = gameState->m_NumBoids;
+
     Vector3 steeringForce = {};
 
     int numNearbyBoids = 0;
 
-    for (const auto& boid : boids)
+    for (int i = 0; i < numBoids; i++)
     {
+        const Boid boid = boids[i];
+
         const float distance = Vector3Distance(m_Position, boid.m_Position);
         const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
 
@@ -99,14 +111,19 @@ Vector3 Boid::Align(const std::vector<Boid>& boids) const
     return steeringForce;
 }
 
-Vector3 Boid::Cohere(const std::vector<Boid>& boids) const
+Vector3 Boid::Cohere(const GameState* gameState) const
 {
+    const Boid* boids = gameState->m_Boids;
+    const int numBoids = gameState->m_NumBoids;
+
     Vector3 steeringForce = {};
 
     int numNearbyBoids = 0;
 
-    for (const Boid& boid : boids)
+    for (int i = 0; i < numBoids; i++)
     {
+        const Boid boid = boids[i];
+
         const float distance = Vector3Distance(m_Position, boid.m_Position);
         const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
 
@@ -127,15 +144,20 @@ Vector3 Boid::Cohere(const std::vector<Boid>& boids) const
     return steeringForce;
 }
 
-Vector3 Boid::Separate(const std::vector<Boid>& boids) const
+Vector3 Boid::Separate(const GameState* gameState) const
 {
+    const Boid* boids = gameState->m_Boids;
+    const int numBoids = gameState->m_NumBoids;
+
     constexpr float separationDistance = 15.0f;
 
     Vector3 steeringForce = {};
     int numNearbyBoids = 0;
 
-    for (const Boid& boid : boids)
+    for (int i = 0; i < numBoids; i++)
     {
+        const Boid boid = boids[i];
+
         const float distance = Vector3Distance(m_Position, boid.m_Position);
         const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
 
@@ -157,24 +179,33 @@ Vector3 Boid::Separate(const std::vector<Boid>& boids) const
     return steeringForce;
 }
 
-void DrawBoids(const std::vector<Boid>& boids)
+void DrawBoids(const GameState* gameState)
 {
-    constexpr float radius = 1.5f;
+    const Boid* boids = gameState->m_Boids;
+    const int numBoids = gameState->m_NumBoids;
 
-    for (const auto& boid : boids)
+    for (int i = 0; i < numBoids; i++)
     {
+        const Boid boid = boids[i];
+
         DrawBoid(boid, DARKBLUE, 3);
     }
 }
 
-void UpdateBoids(std::vector<Boid>& boids, const float worldSize)
+void UpdateBoids(GameState* gameState)
 {
     constexpr float maxSpeed = 3.0f;
 
-    for (Boid& boid : boids)
+    Boid* boids = gameState->m_Boids;
+    const int numBoids = gameState->m_NumBoids;
+    const float worldSize = gameState->m_WorldSize;
+
+    for (int i = 0; i < numBoids; i++)
     {
+        Boid& boid = boids[i];
+
         // Apply alignment, cohesion and separation.
-        Vector3 acceleration = boid.Align(boids) + boid.Cohere(boids) + boid.Separate(boids);
+        Vector3 acceleration = boid.Align(gameState) + boid.Cohere(gameState) + boid.Separate(gameState);
 
         // Update position
         boid.m_Velocity += acceleration;

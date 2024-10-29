@@ -17,6 +17,8 @@
     </ClInclude>
     <ClInclude Include="code\boid.h" />
     <ClInclude Include="code\mathutils.h" />
+    <ClInclude Include="code\game.h" />
+    <ClInclude Include="code\raylibwindows.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="extern">

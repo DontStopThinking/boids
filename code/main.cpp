@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <vector>
 #include <cmath>
 #include <ctime>
 #include <cstdlib>
@@ -7,6 +6,8 @@
 #include "raylib.h"
 #include "raymath.h"
 
+#include "raylibwindows.h"
+#include "game.h"
 #include "boid.h"
 #include "mathutils.h"
 
@@ -19,7 +20,8 @@ int main()
 
     InitWindow(screenWidth, screenHeight, "Boids");
 
-    SetTargetFPS(60);
+    constexpr int fps = 60;
+    SetTargetFPS(fps);
 
     Camera camera =
     {
@@ -36,8 +38,30 @@ int main()
     constexpr float worldSize = 200.0f;
     constexpr float worldSizeHalf = worldSize / 2;
 
-    std::vector<Boid> boids;
-    boids.reserve(numBoids);
+    GameMemory gameMemory = {};
+    gameMemory.m_PermanentStorageSize = sizeof(GameState) + (sizeof(Boid) * numBoids);
+    gameMemory.m_PermanentStorage = VirtualAlloc(
+        nullptr,
+        gameMemory.m_PermanentStorageSize,
+        MEM_RESERVE | MEM_COMMIT,
+        PAGE_READWRITE);
+
+    if (!gameMemory.m_PermanentStorage)
+    {
+        std::puts("ERROR: Failed to allocate memory for the game. Exiting.");
+        return -1;
+    }
+
+    GameState* gameState = (GameState*)gameMemory.m_PermanentStorage;
+    gameState->m_NumBoids = numBoids;
+    gameState->m_WorldSize = worldSizeHalf;
+
+    // We assign the boids array pointer to point to just after the gameState object. So after this our memory
+    // layout will basically be:
+    // -----------------------------------------------
+    // | gameState object | gameState->m_Boids array |
+    // ---------------------------------------------- -
+    gameState->m_Boids = (Boid*)((uint8_t*)gameMemory.m_PermanentStorage + sizeof(GameState));
 
     for (int i = 0; i < numBoids; i++)
     {
@@ -55,7 +79,7 @@ int main()
         };
         boid.m_Velocity = CreateRandomVector3() * 0.3f;
 
-        boids.push_back(std::move(boid));
+        gameState->m_Boids[i] = boid;
     }
 
     constexpr float moveSpeed = 2.0f;
@@ -79,7 +103,7 @@ int main()
 
         UpdateCameraPro(&camera, cameraMovement, cameraRotation, 0.0f);
 
-        UpdateBoids(boids, worldSizeHalf);
+        UpdateBoids(gameState);
         /**** END UPDATE ****/
 
         /**** BEGIN DRAW ****/
@@ -89,7 +113,7 @@ int main()
 
             BeginMode3D(camera);
 
-                DrawBoids(boids);
+                DrawBoids(gameState);
 
                 DrawCube(
                     Vector3{ .x = 0.0f, .y = 0.0f, .z = 0.0f },
