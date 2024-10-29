@@ -1,5 +1,7 @@
 #include "boid.h"
 
+#include <cstdio>
+
 #include "rlgl.h"
 
 #include "mathutils.h"
