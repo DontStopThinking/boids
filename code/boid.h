@@ -8,8 +8,8 @@
 class Boid
 {
 public:
-    Vector3 m_Position;
-    Vector3 m_Velocity;
+    Vector3 position;
+    Vector3 velocity;
 
     Vector3 Align(const GameState* gameState) const;
     Vector3 Cohere(const GameState* gameState) const;

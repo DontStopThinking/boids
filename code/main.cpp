@@ -39,29 +39,29 @@ int main()
     constexpr float worldSizeHalf = worldSize / 2;
 
     GameMemory gameMemory = {};
-    gameMemory.m_PermanentStorageSize = sizeof(GameState) + (sizeof(Boid) * numBoids);
-    gameMemory.m_PermanentStorage = VirtualAlloc(
+    gameMemory.permanentStorageSize = sizeof(GameState) + (sizeof(Boid) * numBoids);
+    gameMemory.permanentStorage = VirtualAlloc(
         nullptr,
-        gameMemory.m_PermanentStorageSize,
+        gameMemory.permanentStorageSize,
         MEM_RESERVE | MEM_COMMIT,
         PAGE_READWRITE);
 
-    if (!gameMemory.m_PermanentStorage)
+    if (!gameMemory.permanentStorage)
     {
         std::puts("ERROR: Failed to allocate memory for the game. Exiting.");
         return -1;
     }
 
-    GameState* gameState = (GameState*)gameMemory.m_PermanentStorage;
-    gameState->m_NumBoids = numBoids;
-    gameState->m_WorldSize = worldSizeHalf;
+    GameState* gameState = (GameState*)gameMemory.permanentStorage;
+    gameState->numBoids = numBoids;
+    gameState->worldSize = worldSizeHalf;
 
     // We assign the boids array pointer to point to just after the gameState object. So after this our memory
     // layout will basically be:
     // --------------------------------------------------------------
-    // | gameState object | array that gameState->m_Boids points to |
+    // | gameState object | array that gameState->boids points to |
     // --------------------------------------------------------------
-    gameState->m_Boids = (Boid*)((uint8_t*)gameMemory.m_PermanentStorage + sizeof(GameState));
+    gameState->boids = (Boid*)((uint8_t*)gameMemory.permanentStorage + sizeof(GameState));
 
     for (int i = 0; i < numBoids; i++)
     {
@@ -71,15 +71,15 @@ int main()
 
         Boid boid = {};
 
-        boid.m_Position =
+        boid.position =
         {
             .x = rx,
             .y = ry,
             .z = rz
         };
-        boid.m_Velocity = CreateRandomVector3() * 0.3f;
+        boid.velocity = CreateRandomVector3() * 0.3f;
 
-        gameState->m_Boids[i] = boid;
+        gameState->boids[i] = boid;
     }
 
     constexpr float moveSpeed = 2.0f;

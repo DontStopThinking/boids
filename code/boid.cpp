@@ -17,9 +17,9 @@ namespace
         Vector3 steeringForce = {};
 
         const float limit = worldLimit - boundaryThreshold;
-        const float bx = boid.m_Position.x;
-        const float by = boid.m_Position.y;
-        const float bz = boid.m_Position.z;
+        const float bx = boid.position.x;
+        const float by = boid.position.y;
+        const float bz = boid.position.z;
 
         if (bx > limit)
         {
@@ -73,9 +73,9 @@ namespace
         };
 
         rlPushMatrix();
-        rlTranslatef(boid.m_Position.x, boid.m_Position.y, boid.m_Position.z);
+        rlTranslatef(boid.position.x, boid.position.y, boid.position.z);
 
-        const float rotateAngle = (-RAD2DEG) * std::atan2(boid.m_Velocity.x, -boid.m_Velocity.z);
+        const float rotateAngle = (-RAD2DEG) * std::atan2(boid.velocity.x, -boid.velocity.z);
         rlRotatef(rotateAngle, 0.0f, 1.0f, 0.0f);
 
         rlScalef(scale, scale, scale);
@@ -97,15 +97,15 @@ namespace
     void PrintBoid(const Boid* boid)
     {
         std::printf("Position: { .x = %f, .y = %f, .z = %f}, Velocity:  .x = %f, .y = %f, .z = %f}\n",
-            boid->m_Position.x, boid->m_Position.y, boid->m_Position.z,
-            boid->m_Velocity.x, boid->m_Velocity.y, boid->m_Velocity.z);
+            boid->position.x, boid->position.y, boid->position.z,
+            boid->velocity.x, boid->velocity.y, boid->velocity.z);
     }
 }
 
 Vector3 Boid::Align(const GameState* gameState) const
 {
-    const Boid* boids = gameState->m_Boids;
-    const int numBoids = gameState->m_NumBoids;
+    const Boid* boids = gameState->boids;
+    const int numBoids = gameState->numBoids;
 
     Vector3 steeringForce = {};
 
@@ -115,12 +115,12 @@ Vector3 Boid::Align(const GameState* gameState) const
     {
         const Boid boid = boids[i];
 
-        const float distance = Vector3Distance(m_Position, boid.m_Position);
-        const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
+        const float distance = Vector3Distance(position, boid.position);
+        const bool isOtherPosSameAsMe = (position == boid.position);
 
         if (!isOtherPosSameAsMe && distance < viewRadius)
         {
-            steeringForce += boid.m_Velocity; // Sum up velocities of all nearby boids
+            steeringForce += boid.velocity; // Sum up velocities of all nearby boids
             numNearbyBoids++;
         }
     }
@@ -128,7 +128,7 @@ Vector3 Boid::Align(const GameState* gameState) const
     if (numNearbyBoids > 0)
     {
         steeringForce /= (float)numNearbyBoids; // Average the force
-        steeringForce -= m_Velocity;
+        steeringForce -= velocity;
         steeringForce = Vector3ClampValue(steeringForce, 0.0f, maxForce);
     }
 
@@ -137,8 +137,8 @@ Vector3 Boid::Align(const GameState* gameState) const
 
 Vector3 Boid::Cohere(const GameState* gameState) const
 {
-    const Boid* boids = gameState->m_Boids;
-    const int numBoids = gameState->m_NumBoids;
+    const Boid* boids = gameState->boids;
+    const int numBoids = gameState->numBoids;
 
     Vector3 steeringForce = {};
 
@@ -148,12 +148,12 @@ Vector3 Boid::Cohere(const GameState* gameState) const
     {
         const Boid boid = boids[i];
 
-        const float distance = Vector3Distance(m_Position, boid.m_Position);
-        const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
+        const float distance = Vector3Distance(position, boid.position);
+        const bool isOtherPosSameAsMe = (position == boid.position);
 
         if (!isOtherPosSameAsMe && distance < viewRadius)
         {
-            steeringForce += boid.m_Position; // Sum up the position of all nearby boids
+            steeringForce += boid.position; // Sum up the position of all nearby boids
             numNearbyBoids++;
         }
     }
@@ -161,7 +161,7 @@ Vector3 Boid::Cohere(const GameState* gameState) const
     if (numNearbyBoids > 0)
     {
         steeringForce /= (float)numNearbyBoids; // The average position
-        steeringForce -= m_Position;
+        steeringForce -= position;
         steeringForce = Vector3ClampValue(steeringForce, 0, maxForce);
     }
 
@@ -170,8 +170,8 @@ Vector3 Boid::Cohere(const GameState* gameState) const
 
 Vector3 Boid::Separate(const GameState* gameState) const
 {
-    const Boid* boids = gameState->m_Boids;
-    const int numBoids = gameState->m_NumBoids;
+    const Boid* boids = gameState->boids;
+    const int numBoids = gameState->numBoids;
 
     constexpr float separationDistance = 20.0f;
 
@@ -182,14 +182,14 @@ Vector3 Boid::Separate(const GameState* gameState) const
     {
         const Boid boid = boids[i];
 
-        const float distance = Vector3Distance(m_Position, boid.m_Position);
-        const bool isOtherPosSameAsMe = (m_Position == boid.m_Position);
+        const float distance = Vector3Distance(position, boid.position);
+        const bool isOtherPosSameAsMe = (position == boid.position);
 
         if (!isOtherPosSameAsMe && distance < separationDistance)
         {
             numNearbyBoids++;
             // Divide by distance so closer boids have a higher impact on separation force
-            Vector3 diff = (m_Position - boid.m_Position) / distance;
+            Vector3 diff = (position - boid.position) / distance;
             steeringForce += diff;
         }
     }
@@ -205,8 +205,8 @@ Vector3 Boid::Separate(const GameState* gameState) const
 
 void DrawBoids(const GameState* gameState)
 {
-    const Boid* boids = gameState->m_Boids;
-    const int numBoids = gameState->m_NumBoids;
+    const Boid* boids = gameState->boids;
+    const int numBoids = gameState->numBoids;
 
     for (int i = 0; i < numBoids; i++)
     {
@@ -220,9 +220,9 @@ void UpdateBoids(GameState* gameState)
 {
     constexpr float maxSpeed = 3.0f;
 
-    Boid* boids = gameState->m_Boids;
-    const int numBoids = gameState->m_NumBoids;
-    const float worldSize = gameState->m_WorldSize;
+    Boid* boids = gameState->boids;
+    const int numBoids = gameState->numBoids;
+    const float worldSize = gameState->worldSize;
 
     for (int i = 0; i < numBoids; i++)
     {
@@ -234,8 +234,8 @@ void UpdateBoids(GameState* gameState)
         acceleration += TurnBoidIfCloseToBoundary(boid, worldSize);
 
         // Update position
-        boid.m_Velocity += acceleration;
-        boid.m_Velocity = Vector3ClampValue(boid.m_Velocity, 0, maxSpeed);
-        boid.m_Position += boid.m_Velocity;
+        boid.velocity += acceleration;
+        boid.velocity = Vector3ClampValue(boid.velocity, 0, maxSpeed);
+        boid.position += boid.velocity;
     }
 }
