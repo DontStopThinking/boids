@@ -34,6 +34,7 @@ int main()
 
     DisableCursor();
 
+    constexpr int numBoids = 300;
     constexpr float worldSize = 200.0f;
     constexpr float worldSizeHalf = worldSize / 2;
 
