@@ -41,10 +41,21 @@ Vector3 operator+(const Vector3 v1, const Vector3 v2)
     return Vector3Add(v1, v2);
 }
 
+Vector3 operator+(const Vector3 v, const float val)
+{
+    return Vector3AddValue(v, val);
+}
+
 Vector3& operator+=(Vector3& v1, const Vector3 v2)
 {
     v1 = v1 + v2;
     return v1;
+}
+
+Vector3& operator+=(Vector3& v, const float val)
+{
+    v = v + val;
+    return v;
 }
 
 Vector3 operator-(const Vector3 v)
@@ -57,10 +68,21 @@ Vector3 operator-(const Vector3 v1, const Vector3 v2)
     return Vector3Subtract(v1, v2);
 }
 
+Vector3 operator-(const Vector3 v, const float val)
+{
+    return Vector3SubtractValue(v, val);
+}
+
 Vector3& operator-=(Vector3& v1, const Vector3 v2)
 {
     v1 = v1 - v2;
     return v1;
+}
+
+Vector3& operator-=(Vector3& v, const float val)
+{
+    v = v - val;
+    return v;
 }
 
 Vector3 operator/(const Vector3 v1, const Vector3 v2)

@@ -8,8 +8,8 @@
 
 namespace
 {
-    constexpr float viewRadius = 10.0f;
-    constexpr float maxForce = 0.1f;
+    constexpr float viewRadius = 16.0f;
+    constexpr float maxForce = 0.05f;
     constexpr float boundaryThreshold = 5.0f;
 
     Vector3 TurnBoidIfCloseToBoundary(const Boid& boid, const float worldLimit)
@@ -218,7 +218,7 @@ void DrawBoids(const GameState* gameState)
 
 void UpdateBoids(GameState* gameState)
 {
-    constexpr float maxSpeed = 3.0f;
+    constexpr float maxSpeed = 5.0f;
 
     Boid* boids = gameState->boids;
     const int numBoids = gameState->numBoids;
